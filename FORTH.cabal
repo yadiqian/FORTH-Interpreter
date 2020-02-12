@@ -47,7 +47,7 @@ executable FORTH
   -- other-extensions:    
   
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.10 && <4.11
+  build-depends:       base >=4.0
                       ,flow >=1.0.19
   
   -- Directories containing source files.
