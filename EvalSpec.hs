@@ -27,6 +27,49 @@ main = hspec $ do
         -- it "errors on non-numeric inputs" $ do
         --    evaluate(eval "*" [Real 3.0, Id "x"]) `shouldThrow` anyException
 
+    context "/" $ do        
+        it "divides numbers and get int result" $ do
+            eval "/" [Integer 9, Integer 99] `shouldBe` [Integer 11]
+            eval "/" [Integer 3, Real 3.0] `shouldBe` [Integer 1]
+            eval "/" [Real 3.0, Integer (-21)] `shouldBe` [Integer (-7)]
+            eval "/" [Real (-11.0), Real (-33.0)] `shouldBe` [Integer 3]
+
+        it "divides numbers and get floating point result" $ do
+            eval "/" [Integer 5, Integer 4] `shouldBe` [Real 0.8]
+            eval "/" [Integer 3, Real 4.5] `shouldBe` [Real 1.5]
+            eval "/" [Real 2.0, Integer 3] `shouldBe` [Real 1.5]
+            eval "/" [Real 4.0, Real (-1.0)] `shouldBe` [Real (-0.25)]
+
+        it "errors on too few arguments" $ do   
+            evaluate (eval "/" []) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "/" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
+
+    context "+" $ do
+        it "adds integers" $ do
+            eval "+" [Integer 2, Integer 3] `shouldBe` [Integer 5]
+        
+        it "adds floats" $ do
+            eval "+" [Integer 2, Real 3.0] `shouldBe` [Real 5.0]
+            eval "+" [Real 3.0, Integer 3] `shouldBe` [Real 6.0]
+            eval "+" [Real 4.0, Real 3.0] `shouldBe` [Real 7.0]
+
+        it "errors on too few arguments" $ do   
+            evaluate (eval "+" []) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "+" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
+
+    context "-" $ do
+        it "subtracts integers" $ do
+            eval "-" [Integer 2, Integer 3] `shouldBe` [Integer 1]
+        
+        it "subtracts floats" $ do
+            eval "-" [Integer 3, Real 2.0] `shouldBe` [Real (-1.0)]
+            eval "-" [Real 3.0, Integer 3] `shouldBe` [Real 0.0]
+            eval "-" [Real (-4.0), Real 3.0] `shouldBe` [Real 7.0]
+
+        it "errors on too few arguments" $ do   
+            evaluate (eval "-" []) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "-" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
+
     context "DUP" $ do
         it "duplicates values" $ do
             eval "DUP" [Integer 2] `shouldBe` [Integer 2, Integer 2]

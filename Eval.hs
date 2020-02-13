@@ -16,6 +16,25 @@ eval "*" (x:y:tl) = (Real $ toFloat x * toFloat y) : tl
 -- any remaining cases are stacks too short
 eval "*" _ = error("Stack underflow")
 
+-- Division
+eval "/" (x : y : tl)
+  | result == Real (fromIntegral toInt) = Integer toInt : tl
+  | otherwise = result : tl
+  where result = Real $ toFloat y / toFloat x
+        toInt = round (toFloat result)
+
+eval "/" _ = error("Stack underflow")
+
+-- Addition
+eval "+" (Integer x : Integer y : tl) = Integer(x + y) : tl
+eval "+" (x : y : tl) = (Real $ toFloat x + toFloat y) : tl
+eval "+" _ = error("Stack underflow")
+
+-- Subtraction
+eval "-" (Integer x : Integer y : tl) = Integer(y - x) : tl
+eval "-" (x : y : tl) = (Real $ toFloat y - toFloat x) : tl
+eval "-" _ = error("Stack underflow")
+
 
 -- Duplicate the element at the top of the stack
 eval "DUP" (x:tl) = (x:x:tl)
