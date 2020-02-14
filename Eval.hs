@@ -46,6 +46,16 @@ eval "^" _ = error("Stack underflow")
 eval "DUP" (x:tl) = (x:x:tl)
 eval "DUP" [] = error("Stack underflow")
 
+-- Concatenate 2 strings from the stack
+eval "CONCAT2" (Id x : Id y : tl) = Id (x ++ y) : tl
+eval "CONCAT2" (x : y : tl) = error("Arguments are not of type String")
+eval "CONCAT2" _ = error("Stack underflow")
+
+-- Concatenate 3 strings from the stack
+eval "CONCAT3" (Id x : Id y : Id z : tl) = Id (x ++ y ++ z) : tl
+eval "CONCAT3" (x : y : z : tl) = error("Arguments are not of type String")
+eval "CONCAT3" _ = error("Stack underflow")
+
 -- this must be the last rule
 -- it assumes that no match is made and preserves the string as argument
 eval s l = Id s : l 

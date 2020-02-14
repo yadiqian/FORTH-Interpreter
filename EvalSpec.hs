@@ -90,6 +90,32 @@ main = hspec $ do
         it "errors on empty stack" $ do
             evaluate (eval "DUP" []) `shouldThrow` errorCall "Stack underflow"
 
+    context "CONCAT2" $ do
+        it "concatenates 2 strings" $ do
+            eval "CONCAT2" [Id "23", Id "50"] `shouldBe` [Id "2350"]
+            eval "CONCAT2" [Id "what", Id "a", Id "day"] `shouldBe` [Id "whata", Id "day"]
+
+        it "throws error when arguments are not of type String" $ do
+            evaluate (eval "CONCAT2" [Real 4.4, Id "50"]) `shouldThrow` anyException
+            evaluate (eval "CONCAT2" [Integer 0, Real 1.1]) `shouldThrow` anyException
+
+        it "errors on empty stack" $ do
+            evaluate (eval "CONCAT2" []) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "CONCAT2" [Id "test"]) `shouldThrow` errorCall "Stack underflow"
+
+    context "CONCAT3" $ do
+        it "concatenates 3 strings" $ do
+            eval "CONCAT3" [Id "23", Id "50", Id "99"] `shouldBe` [Id "235099"]
+            eval "CONCAT3" [Id "what", Id "a", Id "day", Id "!"] `shouldBe` [Id "whataday", Id "!"]
+
+        it "throws error when arguments are not of type String" $ do
+            evaluate (eval "CONCAT3" [Id "id", Id "50", Integer 5]) `shouldThrow` anyException
+            evaluate (eval "CONCAT3" [Integer 0, Real 1.1, Real 0.0]) `shouldThrow` anyException
+
+        it "errors on empty stack" $ do
+            evaluate (eval "CONCAT3" []) `shouldThrow` errorCall "Stack underflow"
+            evaluate (eval "CONCAT3" [Id "hello", Id "world"]) `shouldThrow` errorCall "Stack underflow"
+
   describe "evalOut" $ do
       context "." $ do
         it "prints top of stack" $ do
