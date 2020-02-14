@@ -72,7 +72,9 @@ evalOut "." ([], _) = error "Stack underflow"
 
 -- Outputs correcponding ascii character
 evalOut "EMIT" (Id x : tl, out) = (tl, out ++ x)
-evalOut "EMIT" (Integer i:tl, out) = (tl, out ++ (charToString (chr i)))
+evalOut "EMIT" (Integer i : tl, out)
+  | i >= 0 && i < 128 = (tl, out ++ (charToString (chr i)))
+  | otherwise = error("ASCII code out of range")
 evalOut "EMIT" (Real x:tl, out) = (tl, out ++ (show x)) -- TODO
 evalOut "EMIT" ([], _) = error "Stack underflow"
 

@@ -132,8 +132,12 @@ main = hspec $ do
             evalOut "EMIT" ([Integer 88], "") `shouldBe` ([], "X")
             evalOut "EMIT" ([Real 2.2], "") `shouldBe` ([], "2.2")
 
+        it "errors when Integer out of range" $ do
+            evaluate (evalOut "EMIT" ([Integer 128], "")) `shouldThrow` anyException
+            evaluate (evalOut "EMIT" ([Integer (-1)], "")) `shouldThrow` anyException
+
         it "errors on empty stack" $ do
-            evaluate(evalOut "EMIT" ([], "")) `shouldThrow` errorCall "Stack underflow"
+            evaluate (evalOut "EMIT" ([], "")) `shouldThrow` errorCall "Stack underflow"
 
       context "CR" $ do
         it "prints a new line" $ do
