@@ -11,3 +11,8 @@ main = do
     contents <- readFile fileName
     let (stack, output) = interpret contents 
     putStrLn output
+    if stack /= [] 
+      then do 
+        putStrLn "Stack is not empty"
+        print stack
+      else return ()

@@ -2,6 +2,7 @@ module Eval where
 -- This file contains definitions for functions and operators
 
 import Val
+import Data.Char 
 
 -- main evaluation function for operators and 
 -- built-in FORTH functions with no output
@@ -58,6 +59,15 @@ evalOut "." (Id x:tl, out) = (tl, out ++ x)
 evalOut "." (Integer i:tl, out) = (tl, out ++ (show i))
 evalOut "." (Real x:tl, out) = (tl, out ++ (show x))
 evalOut "." ([], _) = error "Stack underflow"
+
+-- Outputs correcponding ascii character
+evalOut "EMIT" (Id x : tl, out) = (tl, out ++ x)
+evalOut "EMIT" (Integer i:tl, out) = (tl, out ++ (charToString (chr i)))
+evalOut "EMIT" (Real x:tl, out) = (tl, out ++ (show x)) -- TODO
+evalOut "EMIT" ([], _) = error "Stack underflow"
+
+-- prints a new line
+evalOut "CR" (s, out) = (s, out ++ "\n")
 
 -- this has to be the last case
 -- if no special case, ask eval to deal with it and propagate output

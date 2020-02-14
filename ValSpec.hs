@@ -28,3 +28,8 @@ main = hspec $ do
       it "errors on non-numbers" $ do
           -- this case is somewhat tricky
           evaluate (toFloat (Id "x")) `shouldThrow` errorCall "Not convertible to float"
+
+  describe "charToString" $ do  
+      it "converts char to string" $ do
+          charToString ('A' :: Char) `shouldBe` ("A" :: String)
+          charToString ('x' :: Char) `shouldBe` ("x" :: String)

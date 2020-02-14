@@ -26,3 +26,5 @@ toFloat (Real x) = x
 toFloat (Integer i) = fromIntegral i     
 toFloat (Id _) = error "Not convertible to float"
 
+charToString :: Char -> String
+charToString c = [c]

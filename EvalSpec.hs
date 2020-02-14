@@ -100,5 +100,19 @@ main = hspec $ do
         it "errors on empty stack" $ do
             evaluate(evalOut "." ([], "")) `shouldThrow` errorCall "Stack underflow"
 
+      context "EMIT" $ do
+        it "prints top of stack in ascii character" $ do
+            evalOut "EMIT" ([Id "x"], "") `shouldBe` ([],"x")
+            evalOut "EMIT" ([Integer 88], "") `shouldBe` ([], "X")
+            evalOut "EMIT" ([Real 2.2], "") `shouldBe` ([], "2.2")
+
+        it "errors on empty stack" $ do
+            evaluate(evalOut "EMIT" ([], "")) `shouldThrow` errorCall "Stack underflow"
+
+      context "CR" $ do
+        it "prints a new line" $ do
+          evalOut "CR" ([], "") `shouldBe` ([], "\n")
+          evalOut "CR" ([Real 2.0, Integer 5], "") `shouldBe` ([Real 2.0, Integer 5], "\n")
+
       it "eval pass-through" $ do
          evalOut "*" ([Real 2.0, Integer 2], "blah") `shouldBe` ([Real 4.0], "blah") 
