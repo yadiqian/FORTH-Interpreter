@@ -1,0 +1,1 @@
+4 2 * STR random DUP CONCAT3 4 -4 2 + / 100 + EMIT .

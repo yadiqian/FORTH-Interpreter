@@ -90,6 +90,15 @@ main = hspec $ do
         it "errors on empty stack" $ do
             evaluate (eval "DUP" []) `shouldThrow` errorCall "Stack underflow"
 
+    context "STR" $ do
+        it "converts to string" $ do
+            eval "STR" [Integer 2] `shouldBe` [Id "2"]
+            eval "STR" [Real 2.2] `shouldBe` [Id "2.2"]
+            eval "STR" [Id "id"] `shouldBe` [Id "id"]
+
+        it "errors on empty stack" $ do
+            evaluate (eval "STR" []) `shouldThrow` errorCall "Stack underflow"
+
     context "CONCAT2" $ do
         it "concatenates 2 strings" $ do
             eval "CONCAT2" [Id "23", Id "50"] `shouldBe` [Id "2350"]

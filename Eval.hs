@@ -46,6 +46,12 @@ eval "^" _ = error("Stack underflow")
 eval "DUP" (x:tl) = (x:x:tl)
 eval "DUP" [] = error("Stack underflow")
 
+-- Converts element to string
+eval "STR" (Id x : tl) = (Id x : tl)
+eval "STR" (Integer x : tl) = (Id (show x) : tl)
+eval "STR" (Real x : tl) = (Id (show x) : tl)
+eval "STR" [] = error("Stack underflow")
+
 -- Concatenate 2 strings from the stack
 eval "CONCAT2" (Id x : Id y : tl) = Id (x ++ y) : tl
 eval "CONCAT2" (x : y : tl) = error("Arguments are not of type String")
