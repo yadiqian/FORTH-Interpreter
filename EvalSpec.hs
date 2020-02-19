@@ -22,21 +22,32 @@ main = hspec $ do
         it "errors on too few arguments" $ do   
             evaluate (eval "*" []) `shouldThrow` errorCall "Stack underflow"
             evaluate (eval "*" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
-
-        -- this does not work, seems to be a HSpec bug
-        -- it "errors on non-numeric inputs" $ do
-        --    evaluate(eval "*" [Real 3.0, Id "x"]) `shouldThrow` anyException
+        
+        it "errors on non-numeric inputs" $ do   
+            evaluate (eval "*" [Id "string", Integer 5]) `shouldThrow` errorCall "Cannot multiply type of string"
+            evaluate (eval "*" [Real 2.2, Id "string"]) `shouldThrow` errorCall "Cannot multiply type of string"
+            evaluate (eval "*" [Id "string", Id "string"]) `shouldThrow` errorCall "Cannot multiply type of string"
 
     context "/" $ do        
-        it "divides integer numbers and get int result" $ do
+        it "divides integers" $ do
             eval "/" [Integer 9, Integer 99] `shouldBe` [Integer 11]
             eval "/" [Integer (-3), Integer (-54)] `shouldBe` [Integer 18]
+            eval "/" [Integer (7), Integer (33)] `shouldBe` [Integer 4]
+            eval "/" [Integer (-3), Integer (52)] `shouldBe` [Integer (-17)]
 
-        it "divides numbers and get floating point result" $ do
-            eval "/" [Integer 5, Integer 4] `shouldBe` [Real 0.8]
+        it "divides floats" $ do
             eval "/" [Integer 3, Real 4.5] `shouldBe` [Real 1.5]
             eval "/" [Real 2.0, Integer 3] `shouldBe` [Real 1.5]
             eval "/" [Real 4.0, Real (-1.0)] `shouldBe` [Real (-0.25)]
+
+        it "errors on non-numeric inputs" $ do   
+            evaluate (eval "/" [Id "string", Integer 5]) `shouldThrow` errorCall "Cannot divide type of string"
+            evaluate (eval "/" [Real 2.2, Id "string"]) `shouldThrow` errorCall "Cannot divide type of string"
+            evaluate (eval "/" [Id "string", Id "string"]) `shouldThrow` errorCall "Cannot divide type of string"
+        
+        it "errors on division by 0" $ do   
+            evaluate (eval "/" [Integer 500, Integer 0]) `shouldThrow` errorCall "Cannot divide by 0"
+            evaluate (eval "/" [Real 4, Real 0.0]) `shouldThrow` errorCall "Cannot divide by 0"
 
         it "errors on too few arguments" $ do   
             evaluate (eval "/" []) `shouldThrow` errorCall "Stack underflow"
@@ -55,6 +66,11 @@ main = hspec $ do
             evaluate (eval "+" []) `shouldThrow` errorCall "Stack underflow"
             evaluate (eval "+" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
 
+        it "errors on non-numeric inputs" $ do   
+            evaluate (eval "+" [Id "string", Integer 5]) `shouldThrow` errorCall "Cannot add type of string"
+            evaluate (eval "+" [Real 2.2, Id "string"]) `shouldThrow` errorCall "Cannot add type of string"
+            evaluate (eval "+" [Id "string", Id "string"]) `shouldThrow` errorCall "Cannot add type of string"
+
     context "-" $ do
         it "subtracts integers" $ do
             eval "-" [Integer 2, Integer 3] `shouldBe` [Integer 1]
@@ -68,6 +84,11 @@ main = hspec $ do
             evaluate (eval "-" []) `shouldThrow` errorCall "Stack underflow"
             evaluate (eval "-" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
 
+        it "errors on non-numeric inputs" $ do   
+            evaluate (eval "-" [Id "string", Integer 5]) `shouldThrow` errorCall "Cannot subtract type of string"
+            evaluate (eval "-" [Real 2.2, Id "string"]) `shouldThrow` errorCall "Cannot subtract type of string"
+            evaluate (eval "-" [Id "string", Id "string"]) `shouldThrow` errorCall "Cannot subtract type of string"
+
     context "^" $ do
         it "calculates power of integers" $ do
             eval "^" [Integer 2, Integer 3] `shouldBe` [Integer 9]
@@ -80,6 +101,11 @@ main = hspec $ do
         it "errors on too few arguments" $ do   
             evaluate (eval "-" []) `shouldThrow` errorCall "Stack underflow"
             evaluate (eval "-" [Integer 2]) `shouldThrow` errorCall "Stack underflow"
+
+        it "errors on non-numeric inputs" $ do   
+            evaluate (eval "^" [Id "string", Integer 5]) `shouldThrow` errorCall "Cannot calculate type of string"
+            evaluate (eval "^" [Real 2.2, Id "string"]) `shouldThrow` errorCall "Cannot calculate type of string"
+            evaluate (eval "^" [Id "string", Id "string"]) `shouldThrow` errorCall "Cannot calculate type of string"
 
     context "DUP" $ do
         it "duplicates values" $ do
@@ -105,8 +131,8 @@ main = hspec $ do
             eval "CONCAT2" [Id "what", Id "a", Id "day"] `shouldBe` [Id "whata", Id "day"]
 
         it "throws error when arguments are not of type String" $ do
-            evaluate (eval "CONCAT2" [Real 4.4, Id "50"]) `shouldThrow` anyException
-            evaluate (eval "CONCAT2" [Integer 0, Real 1.1]) `shouldThrow` anyException
+            evaluate (eval "CONCAT2" [Real 4.4, Id "50"]) `shouldThrow` errorCall("Arguments are not of type String")
+            evaluate (eval "CONCAT2" [Integer 0, Real 1.1]) `shouldThrow` errorCall("Arguments are not of type String")
 
         it "errors on empty stack" $ do
             evaluate (eval "CONCAT2" []) `shouldThrow` errorCall "Stack underflow"
@@ -118,8 +144,8 @@ main = hspec $ do
             eval "CONCAT3" [Id "what", Id "a", Id "day", Id "!"] `shouldBe` [Id "whataday", Id "!"]
 
         it "throws error when arguments are not of type String" $ do
-            evaluate (eval "CONCAT3" [Id "id", Id "50", Integer 5]) `shouldThrow` anyException
-            evaluate (eval "CONCAT3" [Integer 0, Real 1.1, Real 0.0]) `shouldThrow` anyException
+            evaluate (eval "CONCAT3" [Id "id", Id "50", Integer 5]) `shouldThrow` errorCall("Arguments are not of type String")
+            evaluate (eval "CONCAT3" [Integer 0, Real 1.1, Real 0.0]) `shouldThrow` errorCall("Arguments are not of type String")
 
         it "errors on empty stack" $ do
             evaluate (eval "CONCAT3" []) `shouldThrow` errorCall "Stack underflow"
@@ -137,13 +163,16 @@ main = hspec $ do
 
       context "EMIT" $ do
         it "prints top of stack in ascii character" $ do
-            evalOut "EMIT" ([Id "x"], "") `shouldBe` ([],"x")
+            evalOut "EMIT" ([Integer 65], "") `shouldBe` ([],"A")
             evalOut "EMIT" ([Integer 88], "") `shouldBe` ([], "X")
-            evalOut "EMIT" ([Real 2.2], "") `shouldBe` ([], "2.2")
 
         it "errors when Integer out of range" $ do
-            evaluate (evalOut "EMIT" ([Integer 128], "")) `shouldThrow` anyException
-            evaluate (evalOut "EMIT" ([Integer (-1)], "")) `shouldThrow` anyException
+            evaluate (evalOut "EMIT" ([Integer 128], "")) `shouldThrow` errorCall("ASCII code out of range")
+            evaluate (evalOut "EMIT" ([Integer (-1)], "")) `shouldThrow` errorCall("ASCII code out of range")
+
+        it "errors when argument type is not Integer" $ do
+            evaluate (evalOut "EMIT" ([Real 2.2], "")) `shouldThrow` errorCall("Arguments are not of type Int")
+            evaluate (evalOut "EMIT" ([Id "string"], "")) `shouldThrow` errorCall("Arguments are not of type Int")
 
         it "errors on empty stack" $ do
             evaluate (evalOut "EMIT" ([], "")) `shouldThrow` errorCall "Stack underflow"

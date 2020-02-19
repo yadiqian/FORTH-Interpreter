@@ -10,6 +10,8 @@ import Data.Char
 -- resulting from evaluation of the function
 eval :: String -> [Val] -> [Val]
 -- Multiplication
+eval "*" (Id x : _ : tl) = error("Cannot multiply type of string")
+eval "*" (_ : Id x : tl) = error("Cannot multiply type of string")
 -- if arguments are integers, keep result as integer
 eval "*" (Integer x: Integer y:tl) = Integer (x*y) : tl
 -- if any argument is float, make result a float
@@ -18,26 +20,31 @@ eval "*" (x:y:tl) = (Real $ toFloat x * toFloat y) : tl
 eval "*" _ = error("Stack underflow")
 
 -- Division
-eval "/" (Integer x : Integer y : tl)
-  | result == Real (fromIntegral toInt) = Integer toInt : tl
-  | otherwise = result : tl
-  where result = Real $ toFloat (Integer y) / toFloat (Integer x)
-        toInt = round (toFloat result)
-
+eval "/" (Id x : _ : tl) = error("Cannot divide type of string")
+eval "/" (_ : Id x : tl) = error("Cannot divide type of string")
+eval "/" (_ : Integer 0 : tl) = error("Cannot divide by 0")
+eval "/" (_ : Real 0.0 : tl) = error("Cannot divide by 0")
+eval "/" (Integer x: Integer y:tl) = Integer (truncate (fromIntegral y / fromIntegral x)) : tl
 eval "/" (x : y : tl) = (Real $ toFloat y / toFloat x) : tl 
 eval "/" _ = error("Stack underflow")
 
 -- Addition
+eval "+" (Id x : _ : tl) = error("Cannot add type of string")
+eval "+" (_ : Id x : tl) = error("Cannot add type of string")
 eval "+" (Integer x : Integer y : tl) = Integer(x + y) : tl
 eval "+" (x : y : tl) = (Real $ toFloat x + toFloat y) : tl
 eval "+" _ = error("Stack underflow")
 
 -- Subtraction
+eval "-" (Id x : _ : tl) = error("Cannot subtract type of string")
+eval "-" (_ : Id x : tl) = error("Cannot subtract type of string")
 eval "-" (Integer x : Integer y : tl) = Integer(y - x) : tl
 eval "-" (x : y : tl) = (Real $ toFloat y - toFloat x) : tl
 eval "-" _ = error("Stack underflow")
 
 -- Power function
+eval "^" (Id x : _ : tl) = error("Cannot calculate type of string")
+eval "^" (_ : Id x : tl) = error("Cannot calculate type of string")
 eval "^" (Integer x : Integer y : tl) = Integer(y ^ x) : tl
 eval "^" (x : y : tl) = (Real $ toFloat y ** toFloat x) : tl
 eval "^" _ = error("Stack underflow")
@@ -77,11 +84,10 @@ evalOut "." (Real x:tl, out) = (tl, out ++ (show x))
 evalOut "." ([], _) = error "Stack underflow"
 
 -- Outputs correcponding ascii character
-evalOut "EMIT" (Id x : tl, out) = (tl, out ++ x)
 evalOut "EMIT" (Integer i : tl, out)
   | i >= 0 && i < 128 = (tl, out ++ (charToString (chr i)))
   | otherwise = error("ASCII code out of range")
-evalOut "EMIT" (Real x:tl, out) = (tl, out ++ (show x)) -- TODO
+evalOut "EMIT" (x : tl, out) = error("Arguments are not of type Int")
 evalOut "EMIT" ([], _) = error "Stack underflow"
 
 -- prints a new line
