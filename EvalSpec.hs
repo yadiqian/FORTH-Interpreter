@@ -96,7 +96,12 @@ main = hspec $ do
         it "calculates power of floats" $ do
             eval "^" [Integer 3, Real 2.0] `shouldBe` [Real 8.0]
             eval "^" [Real 3.0, Integer 3] `shouldBe` [Real 27.0]
-            eval "^" [Real (-4.0), Real 1.0] `shouldBe` [Real 1.0]
+            eval "^" [Real (-4.0), Real 2.0] `shouldBe` [Real 0.0625]
+            eval "^" [Integer 4, Integer (-4)] `shouldBe` [Integer 256]
+            eval "^" [Integer 0, Integer (-87623)] `shouldBe` [Integer 1]
+
+        it "errors on negative exponent with integer arguments" $ do
+            evaluate (eval "^" [Integer (-4), Integer 2]) `shouldThrow` errorCall "Negative exponent exception"
 
         it "errors on too few arguments" $ do   
             evaluate (eval "-" []) `shouldThrow` errorCall "Stack underflow"

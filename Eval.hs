@@ -45,7 +45,9 @@ eval "-" _ = error("Stack underflow")
 -- Power function
 eval "^" (Id x : _ : tl) = error("Cannot calculate type of string")
 eval "^" (_ : Id x : tl) = error("Cannot calculate type of string")
-eval "^" (Integer x : Integer y : tl) = Integer(y ^ x) : tl
+eval "^" (Integer x : Integer y : tl)
+  | x >= 0 = Integer(y ^ x) : tl
+  | otherwise = error("Negative exponent exception")
 eval "^" (x : y : tl) = (Real $ toFloat y ** toFloat x) : tl
 eval "^" _ = error("Stack underflow")
 
