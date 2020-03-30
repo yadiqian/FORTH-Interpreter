@@ -1,4 +1,4 @@
-# Forth Interpreter
+# FORTH Interpreter
 
 All required functionalities are implemented. 
 
